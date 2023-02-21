@@ -31,7 +31,6 @@ top_left_y = s_height - play_height - 50
 
 fontpath = 'arcade.ttf'
 
-
 # shapes formats
 
 S = [['.....',
@@ -140,7 +139,6 @@ T = [['.....',
 shapes = [S, Z, I, O, J, L, T]
 
 
-
 # class to represent each of the pieces
 
 
@@ -167,7 +165,6 @@ def create_grid(locked_pos={}):
                 grid[y][x] = color  # set grid position to color
 
     return grid
-
 
 
 def convert_shape_format(piece):
@@ -229,8 +226,8 @@ def draw_text_middle(text, size, color, surface):
     font = pygame.font.Font(fontpath, size, bold=False, italic=True)
     label = font.render(text, 1, color)
 
-    surface.blit(label, (top_left_x + play_width/2 - (label.get_width()/2), top_left_y + play_height/2 - (label.get_height()/2)))
-
+    surface.blit(label, (
+    top_left_x + play_width / 2 - (label.get_width() / 2), top_left_y + play_height / 2 - (label.get_height() / 2)))
 
 
 # draws the lines of the grid for the game
@@ -252,15 +249,15 @@ def draw_grid(surface):
 def clear_rows(grid, locked):
     # need to check if row is clear then shift every other row above down one
     increment = 0
-    for i in range(len(grid) - 1, -1, -1):      # start checking the grid backwards
-        grid_row = grid[i]                      # get the last row
-        if (0, 0, 0) not in grid_row:           # if there are no empty spaces (i.e. black blocks)
+    for i in range(len(grid) - 1, -1, -1):  # start checking the grid backwards
+        grid_row = grid[i]  # get the last row
+        if (0, 0, 0) not in grid_row:  # if there are no empty spaces (i.e. black blocks)
             increment += 1
             # add positions to remove from locked
-            index = i                           # row index will be constant
+            index = i  # row index will be constant
             for j in range(len(grid_row)):
                 try:
-                    del locked[(j, i)]          # delete every locked element in the bottom row
+                    del locked[(j, i)]  # delete every locked element in the bottom row
                 except ValueError:
                     continue
 
@@ -273,8 +270,8 @@ def clear_rows(grid, locked):
         # reversed because otherwise the ones on the top will overwrite the lower ones
         for key in sorted(list(locked), key=lambda a: a[1])[::-1]:
             x, y = key
-            if y < index:                       # if the y value is above the removed index
-                new_key = (x, y + increment)    # shift position to down
+            if y < index:  # if the y value is above the removed index
+                new_key = (x, y + increment)  # shift position to down
                 locked[new_key] = locked.pop(key)
 
     return increment
@@ -294,7 +291,8 @@ def draw_next_shape(piece, surface):
         row = list(line)
         for j, column in enumerate(row):
             if column == '0':
-                pygame.draw.rect(surface, piece.color, (start_x + j*block_size, start_y + i*block_size, block_size, block_size), 0)
+                pygame.draw.rect(surface, piece.color,
+                                 (start_x + j * block_size, start_y + i * block_size, block_size, block_size), 0)
 
     surface.blit(label, (start_x, start_y - 30))
 
@@ -309,10 +307,10 @@ def draw_window(surface, grid, score=0):
     font = pygame.font.Font(fontpath, 65, bold=True)
     label = font.render('TETRIS', 1, (255, 255, 255))  # initialise 'Tetris' text with white
 
-    surface.blit(label, ((top_left_x + play_width / 2) - (label.get_width() / 2), 30))  # put surface on the center of the window
+    surface.blit(label, (
+    (top_left_x + play_width / 2) - (label.get_width() / 2), 30))  # put surface on the center of the window
 
     font = pygame.font.Font(fontpath, 30)
-
 
     label_hi = font.render('SCORE   ' + str(score), 1, (255, 255, 255))
 
@@ -340,10 +338,6 @@ def draw_window(surface, grid, score=0):
     # pygame.display.update()
 
 
-
-
-
-
 def main(window):
     locked_positions = {}
     create_grid(locked_positions)
@@ -358,7 +352,6 @@ def main(window):
     level_time = 0
     score = 0
 
-
     while run:
         # need to constantly make new grid as locked positions always change
         grid = create_grid(locked_positions)
@@ -370,9 +363,9 @@ def main(window):
 
         clock.tick()  # updates clock
 
-        if level_time/1000 > 5:    # make the difficulty harder every 10 seconds
+        if level_time / 1000 > 5:  # make the difficulty harder every 10 seconds
             level_time = 0
-            if fall_speed > 0.15:   # until fall speed is 0.15
+            if fall_speed > 0.15:  # until fall speed is 0.15
                 fall_speed -= 0.005
 
         if fall_time / 1000 > fall_speed:
@@ -425,12 +418,11 @@ def main(window):
         if change_piece:  # if the piece is locked
             for pos in piece_pos:
                 p = (pos[0], pos[1])
-                locked_positions[p] = current_piece.color       # add the key and value in the dictionary
+                locked_positions[p] = current_piece.color  # add the key and value in the dictionary
             current_piece = next_piece
             next_piece = get_shape()
             change_piece = False
-            score += clear_rows(grid, locked_positions) * 10    # increment score by 10 for every row cleared
-
+            score += clear_rows(grid, locked_positions) * 10  # increment score by 10 for every row cleared
 
         draw_window(window, grid, score)
         draw_next_shape(next_piece, window)
