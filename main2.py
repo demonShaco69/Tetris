@@ -80,21 +80,21 @@ class Grid:
                     pass
 
 
-def checkBottom(positions, grid):
+def checkBottom(positions, grid, window):
     for pos in positions:
         if pos[1] >= 19:
             return False
     for pos in positions:
         if grid[pos[1] + 1][pos[0]] == 1 and [pos[0], pos[1] + 1] not in positions:
             if pos[1] == 0:
-                gameOver()
+                gameOver(window)
             return False
     return True
 
 
 def canMoveLeft(positions, grid):
     for pos in positions:
-        if pos[0] - 1 > 9 or pos[0] - 1 < 0:
+        if pos[0] - 1 < 0:
             return False
     for pos in positions:
         if grid[pos[1]][pos[0] - 1] == 1 and [pos[0] - 1, pos[1]] not in positions:
@@ -104,7 +104,7 @@ def canMoveLeft(positions, grid):
 
 def canMoveRight(positions, grid):
     for pos in positions:
-        if pos[0] + 1 > 9 or pos[0] + 1 < 0:
+        if pos[0] + 1 > 9:
             return False
     for pos in positions:
         if grid[pos[1]][pos[0] + 1] == 1 and [pos[0] + 1, pos[1]] not in positions:
@@ -203,7 +203,7 @@ def game(window):
         drawWindow(window, desk, desk.score)
         drawNextTetramino(window, nextTetr.ret())
         pygame.display.flip()
-        if not checkBottom(currTetr.ret(), desk.grid):
+        if not checkBottom(currTetr.ret(), desk.grid, window):
             newPieceRequired = True
             Tetraminos.pop(0)
             desk.clearFullRows()
@@ -213,12 +213,22 @@ def game(window):
         clock.tick()
 
 
-def gameOver():
+def gameOver(window):
+    font = pygame.font.Font('arcade.ttf', 50, bold=True)
+    label = font.render('YOU LOST!', 10, (255, 255, 255))
+    window.fill("BLACK")
+    window.blit(label, (280, 400))
+    pygame.display.flip()
+    pygame.time.delay(2000)
     pygame.display.quit()
     quit()
 
 
 def main_menu(window):
+    font = pygame.font.Font('arcade.ttf', 50, bold=True)
+    label = font.render('PRESS ANY KEY TO BEGIN', 10, (255, 255, 255))
+    window.blit(label, (150, 300))
+    pygame.display.flip()
     run = True
     while run:
         for event in pygame.event.get():
@@ -230,12 +240,6 @@ def main_menu(window):
 
 
 if __name__ == '__main__':
-    window = pygame.display.set_mode((800, 750), pygame.DOUBLEBUF|pygame.HWSURFACE)
-
+    window = pygame.display.set_mode((800, 750), pygame.DOUBLEBUF | pygame.HWSURFACE)
     pygame.display.set_caption('Tetris')
-    font = pygame.font.Font('arcade.ttf', 50, bold=True)
-    label = font.render('PRESS ANY KEY TO BEGIN', 10, (255, 255, 255))
-    window.blit(label, (150, 300))
-    pygame.display.flip()
-
     main_menu(window)
